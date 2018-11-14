@@ -36,7 +36,7 @@ def dsa(*args, **data):
 
     Usage:
 
-        new_dsa('1.txt',q=107,p=643,x=45,k=31,mode='signature',h=2)) - example
+        new_dsa('1.txt',q=107,p=643,x=45,k=31,mode='signature',h=2) - example
 
     :returns: collections:
         when signing: {'result':[y,q,k],'params':[r,s]}
@@ -82,7 +82,7 @@ def dsa(*args, **data):
 
                                 # signature
                                 from random import randrange
-                                
+
                                 k = randrange(0,q+1)
                                 r = fastEXP(g, k, p) % q
                                 s = fastEXP(k, q - 2, q) * ((my_hash + x * r) % q)
