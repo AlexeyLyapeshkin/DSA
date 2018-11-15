@@ -22,6 +22,21 @@ def fastEXP(number, stepen, modN):
 
     return x
 
+def isPrime(n):
+    """
+
+    :param n: testing prime
+    :return: True or False
+
+    """
+    from math import sqrt
+    from itertools import count, islice
+    if n < 2: return False
+    for number in islice(count(2), int(sqrt(n) - 1)):
+        if not n % number:
+            return False
+    return True
+
 
 
 def dsa(*args, **data):
@@ -63,16 +78,19 @@ def dsa(*args, **data):
 
         # main
         if mode == 'signature':
+
             q = data.get('q',0)
-            if q != 0:
+            if q != 0 and isPrime(q):
 
                 p = data.get('p',0)
-                if p != 0:
+                print(p)
+                if p != 0 and (p-1) % q == 0 and isPrime(p):
 
-                    h = data.get('h',0)
-                    if h != 0 and 1 <= h <= p - 1:
+                    h = data.get('h','kek')
+                    if h != 'kek' and 1 <= h <= p - 1:
 
                         g = fastEXP(h, ((p - 1) / q), p)
+                        print(g)
                         if g > 1:
 
                             x = data.get('x',0)
@@ -83,11 +101,19 @@ def dsa(*args, **data):
                                 # signature
                                 from random import randrange
 
-                                k = randrange(0,q+1)
-                                r = fastEXP(g, k, p) % q
-                                s = fastEXP(k, q - 2, q) * ((my_hash + x * r) % q)
+                                k = data.get('k',0)
+                                if k <q:
 
-                                return {'result': [y,g,k],'params': [r,s], 'hash': my_hash} # {'result': True, 'params': [36,38,131]} - example
+                                    r = fastEXP(g, k, p) % q
+                                    s = fastEXP(k, q - 2, q) * ((my_hash + x * r) % q)
+
+                                    if r == 0 or s ==0:
+                                        return 'Enter other k!'
+
+                                    return {'result': [y,g,k],'params': [r,s], 'hash': my_hash}
+                                    # {'result': [181,13,13], 'params': [36,38,131]} - example
+                                else:
+                                    return 'Wrong k!'
 
                             else:
                                 return 'Wrong x!'
@@ -103,19 +129,19 @@ def dsa(*args, **data):
         elif mode == 'check':
 
             q = data.get('q', 0)
-            if q != 0:
+            if q != 0 and isPrime(q):
 
                 p = data.get('p', 0)
-                if p != 0:
+                if p != 0 and (p-1) % q == 0 and isPrime(p):
 
-                    r = data.get('r',0)
-                    if r != 0:
+                    r = data.get('r','kek')
+                    if r != 'kek':
 
-                        y = data.get('y',0)
-                        if y != 0:
+                        y = data.get('y','kek')
+                        if y != 'kek':
 
-                            g = data.get('g',0)
-                            if g != 0:
+                            g = data.get('g','kek')
+                            if g != 'kek' and g>1:
 
                                 s = data.get('s',0)
                                 if s != 0:
@@ -150,8 +176,4 @@ def dsa(*args, **data):
 
     except FileNotFoundError:
         return 'File not find.'
-
-
-
-
 
