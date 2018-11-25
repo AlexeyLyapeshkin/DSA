@@ -159,18 +159,19 @@ def frame_2():
             return
 
         filename = askopenfilename()
-        if filename != '':
+        from DSA_text import isPrime
+        if filename != '' and 1 < h < p-1 and isPrime(p) and isPrime(q) and (p-1) % q == 0:
             check = check_sign_dsa(p=p,q=q,h=h,y=y,filename=filename)
             if not isinstance(check,str):
                 if check == True:
-                    verPhoto('img/ver.png',100,80,0.7,0.2)
+                    verPhoto('img/ver.png',100,80,0.6,0.2)
                 else:
-                    verPhoto('img/unver.png', 100, 80, 0.7, 0.2)
+                    verPhoto('img/unver.png', 100, 80, 0.6, 0.2)
 
             else:
                 messagebox.showerror('Error',check)
         else:
-            messagebox.showerror('FileError','Wrong filename.')
+            messagebox.showerror('Error','Wrong filename or h, or p, or q.')
 
 
 
