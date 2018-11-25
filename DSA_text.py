@@ -69,8 +69,8 @@ def dsa_sign(**kwargs):
             if 1 < h < p - 1:
                 g = fastEXP(h, ((p - 1) // q), p)
                 if g > 1:
-                    if 0 <= x <= q:
-                        if 0 <= k <= q:
+                    if 1 <= x <= q:
+                        if 1 <= k <= q-1:
                             if isPrime(p) and isPrime(q):
                                 y = fastEXP(g, x, p)
                                 return (True, g, y)
@@ -87,7 +87,7 @@ def dsa_sign(**kwargs):
         else:
             return 'Invalid p or q.'
 
-    def append_data(data,r,s):
+    def append_data(data, r, s):
         """
 
         Adds a digital signature to the file.
@@ -97,7 +97,7 @@ def dsa_sign(**kwargs):
         :param s: s - int;
         :return: text file with digital signature;
         """
-        data+='`'+str(r)+'~'+str(s)
+        data += '`' + str(r) + '~' + str(s)
         return data
 
     try:
@@ -116,8 +116,8 @@ def dsa_sign(**kwargs):
         filename = kwargs.get('filename')
         if filename is not None:
             try:
-                in_file = open(filename, 'rb')
-                byte_array = in_file.read()
+                in_file = open(filename, 'r')
+                byte_array = in_file.read().encode('utf-8')
                 in_file.close()
             except:
                 return 'I don\'t find file \'{}\' :('.format(filename)
@@ -129,15 +129,15 @@ def dsa_sign(**kwargs):
 
             r = fastEXP(g, k, p) % q
             s = fastEXP(k, q - 2, q) * ((my_hash + x * r) % q)
-            print(r,s)
 
             if r != 0 and s != 0:
                 try:
                     in_file = open(filename, 'r')
                     data = in_file.read()
                     in_file.close()
+
                     in_file = open(filename, 'w')
-                    in_file.write(append_data(data,r,s))
+                    in_file.write(append_data(data, r, s))
                     in_file.close()
                 except:
                     return 'File error.'
@@ -148,6 +148,7 @@ def dsa_sign(**kwargs):
     else:
         return check_string
 
+
 def check_sign_dsa(**kwargs):
     """
 
@@ -156,6 +157,7 @@ def check_sign_dsa(**kwargs):
     :param kwargs: p,q,y...;
     :return: True or error message with explanation;
     """
+
     def get_rs(data):
         """
 
@@ -167,8 +169,8 @@ def check_sign_dsa(**kwargs):
         ind_1 = data.rfind('`')
         ind_2 = data.rfind('~')
         if ind_1 != -1 and ind_2 != -1:
-            r_str = data[ind_1+1:ind_2]
-            s_str = data[ind_2+1:]
+            r_str = data[ind_1 + 1:ind_2]
+            s_str = data[ind_2 + 1:]
         else:
             return 'File don\'t have digital signature!'
         try:
@@ -178,13 +180,13 @@ def check_sign_dsa(**kwargs):
             return 'Convert error'
         data = data[:ind_1]
 
-        return (r,s,data)
+        return (r, s, data)
 
     try:
         p = int(kwargs.get('p', 0))
         q = int(kwargs.get('q', 0))
-        y = int(kwargs.get('y',0))
-        h = int(kwargs.get('h',0))
+        y = int(kwargs.get('y', 0))
+        h = int(kwargs.get('h', 0))
     except:
         return 'Convert error.'
 
@@ -206,19 +208,21 @@ def check_sign_dsa(**kwargs):
         in_file.write(data)
         in_file.close()
 
-
-        in_file = open(filename, 'rb')
-        byte_array = in_file.read()
+        in_file = open(filename, 'r')
+        byte_array = in_file.read().encode('utf-8')
         in_file.close()
 
-        in_file = open(filename, 'a')
-        in_file.write('`'+str(r)+'~'+str(s))
+        in_file = open(filename, 'r')
+        data = in_file.read()
+        in_file.close()
+
+        data += '`' + str(r) + '~' + str(s)
+        in_file = open(filename, 'w')
+        in_file.write(data)
         in_file.close()
 
         hash_obj = SHA_1(byte_array)
         my_hash = int(hash_obj.hexdigest(), 16)
-        print(my_hash)
-
 
         g = fastEXP(h, ((p - 1) // q), p)
         w = fastEXP(s, q - 2, q)
@@ -227,7 +231,7 @@ def check_sign_dsa(**kwargs):
         u2 = (r * w) % q
 
         v = (((g ** u1) * (y ** u2)) % p) % q
-        print(r,v)
+
         if r == v:
             return True
         else:
@@ -235,6 +239,5 @@ def check_sign_dsa(**kwargs):
 
     return 'File error'
 
-
-#print(dsa_sign(q = 107,p = 643,h = 2,x = 45,k = 31, filename='test/1.txt'))
-#print(check_sign_dsa(q=107,p=643,y=181,h=2,filename='test/1.txt'))
+# print(dsa_sign(q = 107,p = 643,h = 2,x = 45,k = 31, filename='test/1.txt'))
+# print(check_sign_dsa(q=107,p=643,y=181,h=2,filename='test/1.txt'))
