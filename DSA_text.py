@@ -115,11 +115,12 @@ def dsa_sign(**kwargs):
 
         filename = kwargs.get('filename')
         if filename is not None:
-
-            in_file = open(filename, 'rb')
-            byte_array = in_file.read()
-            in_file.close()
-
+            try:
+                in_file = open(filename, 'rb')
+                byte_array = in_file.read()
+                in_file.close()
+            except:
+                return 'I don\'t find file \'{}\' :('.format(filename)
             hash_obj = SHA_1(byte_array)
             my_hash = int(hash_obj.hexdigest(), 16)
 
@@ -128,6 +129,7 @@ def dsa_sign(**kwargs):
 
             r = fastEXP(g, k, p) % q
             s = fastEXP(k, q - 2, q) * ((my_hash + x * r) % q)
+            print(r,s)
 
             if r != 0 and s != 0:
                 try:
@@ -189,11 +191,12 @@ def check_sign_dsa(**kwargs):
     filename = kwargs.get('filename')
 
     if filename is not None:
-
-        in_file = open(filename, 'r')
-        data = in_file.read()
-        in_file.close()
-
+        try:
+            in_file = open(filename, 'r')
+            data = in_file.read()
+            in_file.close()
+        except:
+            return 'I don\'t find file \'{}\' :('.format(filename)
         try:
             r, s, data = get_rs(data)
         except:
@@ -203,12 +206,18 @@ def check_sign_dsa(**kwargs):
         in_file.write(data)
         in_file.close()
 
+
         in_file = open(filename, 'rb')
         byte_array = in_file.read()
         in_file.close()
 
+        in_file = open(filename, 'a')
+        in_file.write('`'+str(r)+'~'+str(s))
+        in_file.close()
+
         hash_obj = SHA_1(byte_array)
         my_hash = int(hash_obj.hexdigest(), 16)
+        print(my_hash)
 
 
         g = fastEXP(h, ((p - 1) // q), p)
@@ -218,7 +227,7 @@ def check_sign_dsa(**kwargs):
         u2 = (r * w) % q
 
         v = (((g ** u1) * (y ** u2)) % p) % q
-
+        print(r,v)
         if r == v:
             return True
         else:
@@ -228,4 +237,4 @@ def check_sign_dsa(**kwargs):
 
 
 #print(dsa_sign(q = 107,p = 643,h = 2,x = 45,k = 31, filename='test/1.txt'))
-#print(check_sign_dsa(q=107,p=643,y=181,h=3,filename='test/1.txt'))
+#print(check_sign_dsa(q=107,p=643,y=181,h=2,filename='test/1.txt'))

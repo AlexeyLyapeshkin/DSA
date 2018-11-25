@@ -1,4 +1,4 @@
-
+# coding utf-8
 def fastEXP(number, stepen, modN):
     """
     Classic rapid exponentiation.
