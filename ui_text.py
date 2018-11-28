@@ -7,8 +7,12 @@ def frame_1():
 
     def change_labels(lol,**kwargs):
         label_6['text'] = 'Hash: '+str(lol[3])
-        label_7['text'] = 'Y: '+str(lol[2])
-        label_8['text'] = 'G: '+str(lol[4])
+        if len(str(lol[2])) > 39:
+            label_7['text'] = 'Y: '+str(lol[2])[:20]+'...'+str(lol[2])[-20:]
+            label_8['text'] = 'G: '+str(lol[4])[:20]+'...'+str(lol[4])[-20:]
+        else:
+            label_7['text'] = 'Y: ' + str(lol[2])
+            label_8['text'] = 'G: ' + str(lol[4])
         label_9['text'] = 'Hash(Hex): '+hex(lol[3])[3:]
 
 
@@ -117,10 +121,10 @@ def frame_1():
     label_6.place(relx=.32, rely=.1)
 
     label_7 = tkinter.Label(frame, text='', height=1)
-    label_7.place(relx=.5, rely=.3)
+    label_7.place(relx=.32, rely=.3)
 
     label_8 = tkinter.Label(frame, text='', height=1)
-    label_8.place(relx=.5, rely=.4)
+    label_8.place(relx=.32, rely=.4)
 
     label_9 = tkinter.Label(frame, text='', height=1)
     label_9.place(relx=.32, rely=.2)

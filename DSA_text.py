@@ -26,22 +26,54 @@ def fastEXP(number, stepen, modN):
     return x
 
 
+from random import randint
+from math import log, floor
+import time
+
+def to_reversed_binary(n):
+    r = []
+    while n > 0:
+        r.append(n & 1)
+        n //= 2
+    return r
+
+
+def test(a, n):
+    """
+        test(a, n) -> bool. Tests whether n is complex.
+        Returns:
+            - True, if n is complex.
+            - False, if n is probably prime.
+    """
+    b = to_reversed_binary(n - 1)
+    k = 1
+    for i in range(len(b) - 1, -1, -1):
+        x = k
+        k = (k * k) % n
+        if k == 1 and x != 1 and x != n - 1:
+            return True     #Complex
+        if b[i] == 1:
+            k = (k * a) % n
+    if k != 1:
+        return True     #Complex
+    return False        #Probably prime
+
+
 def isPrime(n):
     """
-
-    The function checks whether the input parameter is a prime number.
-
-    :param n: testing prime
-    :return: True or False
-
+        milrab(n) -> bool Checks whether n is prime or not
+        Returns:
+        - True, if n is probably prime.
+        - False, if n is complex.
     """
-    from math import sqrt
-    from itertools import count, islice
-    if n < 2: return False
-    for number in islice(count(2), int(sqrt(n) - 1)):
-        if not n % number:
-            return False
-    return True
+    if n == 1:
+        return False
+    s = int(floor(log(n, 2)))
+    for j in range(1, s + 1):
+        a = randint(1, n - 1)
+        if test(a, n):
+            return False                #n is complex
+    return True                         #n is probably prime
 
 
 def dsa_sign(**kwargs):
@@ -230,7 +262,7 @@ def check_sign_dsa(**kwargs):
         u1 = (my_hash * w) % q
         u2 = (r * w) % q
 
-        v = (((g ** u1) * (y ** u2)) % p) % q
+        v = ((fastEXP(g, u1,p) * fastEXP(y, u2,p))% p) % q
 
         if r == v:
             return True
@@ -239,5 +271,3 @@ def check_sign_dsa(**kwargs):
 
     return 'File error'
 
-# print(dsa_sign(q = 107,p = 643,h = 2,x = 45,k = 31, filename='test/1.txt'))
-# print(check_sign_dsa(q=107,p=643,y=181,h=2,filename='test/1.txt'))
