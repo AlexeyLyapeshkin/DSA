@@ -13,7 +13,7 @@ def frame_1():
         else:
             label_7['text'] = 'Y: ' + str(lol[2])
             label_8['text'] = 'G: ' + str(lol[4])
-        label_9['text'] = 'Hash(Hex): '+hex(lol[3])[3:]
+        label_9['text'] = 'Hash(Hex): '+hex(lol[3])[2:]
 
 
     def goCheck(**kwargs):
